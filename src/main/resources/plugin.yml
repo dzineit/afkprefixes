@@ -1,0 +1,14 @@
+name: LuckPermsAFK
+version: 1.0
+api-version: 1.13
+main: pw.ollie.luckpermsafk.LPAFKPlugin
+
+depend: [LuckPerms]
+
+commands:
+  toggleafk:
+    description: Toggles AFK
+
+permissions:
+  luckpermsafk.afk:
+    description: Enables usage
