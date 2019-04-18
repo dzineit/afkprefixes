@@ -1,8 +1,6 @@
 package pw.ollie.luckpermsafk.afk;
 
-import pw.ollie.luckpermsafk.LPAFKPlugin;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,12 +8,10 @@ import java.util.Set;
 import java.util.UUID;
 
 public final class AFKManager {
-    private final LPAFKPlugin plugin;
-    private final Map<UUID, Date> lastActions;
+    private final Map<UUID, LocalDateTime> lastActions;
     private final Map<UUID, String> oldPrefixes;
 
-    public AFKManager(LPAFKPlugin plugin) {
-        this.plugin = plugin;
+    public AFKManager() {
         this.lastActions = new HashMap<>();
         this.oldPrefixes = new HashMap<>();
     }
@@ -30,6 +26,7 @@ public final class AFKManager {
 
     public synchronized void startAFK(UUID playerId, String oldPrefix) {
         oldPrefixes.put(playerId, oldPrefix);
+        lastActions.remove(playerId);
     }
 
     public synchronized String endAFK(UUID playerId) {
@@ -37,11 +34,11 @@ public final class AFKManager {
         return oldPrefixes.remove(playerId);
     }
 
-    public synchronized Date getLastAction(UUID playerId) {
+    public synchronized LocalDateTime getLastAction(UUID playerId) {
         return lastActions.get(playerId);
     }
 
     public synchronized void updateLastAction(UUID playerId) {
-        lastActions.put(playerId, new Date());
+        lastActions.put(playerId, LocalDateTime.now());
     }
 }
