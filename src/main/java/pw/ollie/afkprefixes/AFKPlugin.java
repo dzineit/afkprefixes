@@ -1,30 +1,42 @@
-package pw.ollie.luckpermsafk;
+package pw.ollie.afkprefixes;
 
-import pw.ollie.luckpermsafk.afk.AFKManager;
-import pw.ollie.luckpermsafk.afk.AFKUpdateTask;
-import pw.ollie.luckpermsafk.command.ToggleAFKCommand;
-import pw.ollie.luckpermsafk.listener.LPAFKListener;
+import net.milkbowl.vault.chat.Chat;
 
+import pw.ollie.afkprefixes.afk.AFKManager;
+import pw.ollie.afkprefixes.afk.AFKUpdateTask;
+import pw.ollie.afkprefixes.command.ToggleAFKCommand;
+import pw.ollie.afkprefixes.listener.AFKListener;
+
+import org.bukkit.Server;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-public final class LPAFKPlugin extends JavaPlugin {
+public final class AFKPlugin extends JavaPlugin {
     private AFKManager afkManager;
     private AFKUpdateTask task;
+
+    private Chat vaultChat;
 
     private int minutesToAfk;
 
     @Override
     public void onEnable() {
+        Server server = this.getServer();
+        RegisteredServiceProvider<Chat> chatProvider = server.getServicesManager().getRegistration(Chat.class);
+        if (chatProvider != null) {
+            this.vaultChat = chatProvider.getProvider();
+        }
+
         this.saveResource("config.yml", false);
         YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(this.getDataFolder(), "config.yml"));
         this.minutesToAfk = config.getInt("Minutes-to-AFK", 5);
 
         this.afkManager = new AFKManager();
 
-        this.getServer().getPluginManager().registerEvents(new LPAFKListener(this), this);
+        server.getPluginManager().registerEvents(new AFKListener(this), this);
         this.getCommand("toggleafk").setExecutor(new ToggleAFKCommand(this));
 
         this.task = new AFKUpdateTask(this);
@@ -42,5 +54,9 @@ public final class LPAFKPlugin extends JavaPlugin {
 
     public int getMinutesToAFK() {
         return minutesToAfk;
+    }
+
+    public Chat getVaultChat() {
+        return vaultChat;
     }
 }

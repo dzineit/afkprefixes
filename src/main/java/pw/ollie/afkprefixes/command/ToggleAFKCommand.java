@@ -1,7 +1,7 @@
-package pw.ollie.luckpermsafk.command;
+package pw.ollie.afkprefixes.command;
 
-import pw.ollie.luckpermsafk.afk.AFKManager;
-import pw.ollie.luckpermsafk.LPAFKPlugin;
+import pw.ollie.afkprefixes.AFKPlugin;
+import pw.ollie.afkprefixes.afk.AFKManager;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,26 +12,28 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 public final class ToggleAFKCommand implements CommandExecutor {
-    private final LPAFKPlugin plugin;
+    private final AFKPlugin plugin;
 
-    public ToggleAFKCommand(LPAFKPlugin plugin) {
+    public ToggleAFKCommand(AFKPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
-        if (!(sender instanceof Player) || !sender.hasPermission("luckpermsafk.afk")) {
+        if (!(sender instanceof Player) || !sender.hasPermission("afkprefixes.afk")) {
             sender.sendMessage(ChatColor.RED + "You can't do that.");
             return true;
         }
-        UUID playerId = ((Player) sender).getUniqueId();
+        Player player = (Player) sender;
+        UUID playerId = player.getUniqueId();
         AFKManager afkManager = plugin.getAFKManager();
         if (afkManager.isAFK(playerId)) {
             String oldPrefix = afkManager.endAFK(playerId);
-            // todo reset prefix
+            plugin.getVaultChat().setPlayerPrefix(player, oldPrefix);
         } else {
-            // todo change prefix and provide old one
-            afkManager.startAFK(playerId, null);
+            String oldPrefix = plugin.getVaultChat().getPlayerPrefix(player);
+            plugin.getVaultChat().setPlayerPrefix(player, ChatColor.RED + "*AFK*" + oldPrefix);
+            afkManager.startAFK(playerId, oldPrefix);
         }
         return true;
     }

@@ -1,14 +1,14 @@
-name: LuckPermsAFK
+name: AFKPrefixes
 version: 1.0
 api-version: 1.13
-main: pw.ollie.luckpermsafk.LPAFKPlugin
+main: pw.ollie.afkprefixes.AFKPlugin
 
-depend: [LuckPerms]
+depend: [Vault]
 
 commands:
   toggleafk:
     description: Toggles AFK
 
 permissions:
-  luckpermsafk.afk:
+  afkprefixes.afk:
     description: Enables usage

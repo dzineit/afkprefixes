@@ -1,4 +1,4 @@
-package pw.ollie.luckpermsafk.afk;
+package pw.ollie.afkprefixes.afk;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,7 +16,7 @@ public final class AFKManager {
         this.oldPrefixes = new HashMap<>();
     }
 
-    public Set<UUID> getAFKPlayers() {
+    public synchronized Set<UUID> getAFKPlayers() {
         return new HashSet<>(oldPrefixes.keySet());
     }
 
@@ -32,6 +32,11 @@ public final class AFKManager {
     public synchronized String endAFK(UUID playerId) {
         updateLastAction(playerId);
         return oldPrefixes.remove(playerId);
+    }
+
+    public synchronized void stopTracking(UUID playerId) {
+        lastActions.remove(playerId);
+        oldPrefixes.remove(playerId);
     }
 
     public synchronized LocalDateTime getLastAction(UUID playerId) {
